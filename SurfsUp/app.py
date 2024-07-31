@@ -41,7 +41,12 @@ app = Flask(__name__)
 @app.route("/")
 def home_page():
     return (
-        f"Home Page<br />"
+        f"Home Page<br/>"
+        f"/api/v1.0/precipitation<br/>"
+        f"/api/v1.0/stations<br/>"
+        f"/api/v1.0/tobs<br/>"
+        f"/api/v1.0/temp/start<br/>"
+        f"/api/v1.0/temp/start/end"
     )
 
 
@@ -83,17 +88,15 @@ def stats(start=None, end=None):
     sel = [func.min(Measurement.tobs),func.avg(Measurement.tobs), func.max(Measurement.tobs)]
 
     if not end:
-        start = dt.datetime.strptime(start,"%Y-%m-%d") # --> 2016-4-10
+        # start = dt.datetime.strptime(start,"%Y-%m-%d") # --> 2016-4-10
         results = session.query(*sel).\
-        filter(Measurement.date >=start)
-
+        filter(Measurement.date >=start).all()
         session.close()
         temp = list(np.ravel(results))
-
         return jsonify(temp)
     
-    start = dt.datetime.strptime(start,"%Y-%m-%d") # --> 2016-4-10
-    end = dt.datetime.strptime(end,"%Y-%m-%d")
+    # start = dt.datetime.strptime(start,"%Y-%m-%d") # --> 2016-4-10
+    # end = dt.datetime.strptime(end,"%Y-%m-%d")
     results = session.query(*sel).\
     filter(Measurement.date >=start). \
     filter(Measurement.date <= end).all()
@@ -102,6 +105,7 @@ def stats(start=None, end=None):
     temp = list(np.ravel(results))
 
     return jsonify(temp)
+    
 
 
 if __name__ == "__main__":
